@@ -1,0 +1,9 @@
+﻿{
+  "CurrencyConverter": {
+    "ApiKey": "YOUR_API_KEY"
+  },
+
+  "Currencylayer": {
+    "ApiKey": "YOUR_API_KEY"
+  }
+}
