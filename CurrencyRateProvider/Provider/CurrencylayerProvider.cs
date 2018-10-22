@@ -30,7 +30,13 @@ namespace CurrencyRateProvider.Provider
             Rate rate = new Rate();
             rate.From = sourceCur;
             rate.To = destCur;
-            
+
+            //check first if source and target are the same to, save unnecessary queries
+            if (!rate.To.Equals(rate.From))
+            {
+                rate.Value = 1.0m;
+                return rate;
+            }
 
             string queryUrl = "";
 
@@ -75,7 +81,9 @@ namespace CurrencyRateProvider.Provider
 
         }
 
-
-
+        public override Task<IEnumerable<string>> GetSupportedCurrencies()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

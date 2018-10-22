@@ -6,6 +6,8 @@ namespace CurrencyRateProvider.DataModels
 {
     public class Rate
     {
+        public int Id { get; set; } //This is just for ef core
+
         public string From { get; set; }
 
         public string To { get; set; }

@@ -33,8 +33,16 @@ namespace CurrencyRateProvider.Provider
             rate.From = sourceCur;
             rate.To = destCur;
 
-            string queryUrl = "";
+            //check first if source and target are the same to, save unnecessary queries
+            if (!rate.To.Equals(rate.From))
+            {
+                rate.Value = 1.0m;
+                return rate;
+            }
                 
+
+            string queryUrl = "";
+
             if (date.HasValue)
             {
                 var dateQuery = string.Format(dateString, date.Value.Year, date.Value.Month, date.Value.Day);
@@ -45,7 +53,7 @@ namespace CurrencyRateProvider.Provider
                 queryUrl = string.Format(urlFree, sourceCur, destCur, "");
                 rate.Date = DateTime.Now;
             }
-           
+
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(queryUrl);
@@ -77,7 +85,32 @@ namespace CurrencyRateProvider.Provider
                 }
             }
 
+
         }
 
+        public async override Task<IEnumerable<string>> GetSupportedCurrencies()
+        {
+            var queryUrl = "https://free.currencyconverterapi.com/api/v6/currencies";
+
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(queryUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonResult = await response.Content.ReadAsStringAsync();
+                    if (jsonResult.Contains("error"))
+                        ThrowApiError(jsonResult);
+                    dynamic result = JsonConvert.DeserializeObject(jsonResult);
+
+                    return result;
+                }
+                else
+                {
+                    return null;
+                }
+                
+            }
+            
+        }
     }
 }

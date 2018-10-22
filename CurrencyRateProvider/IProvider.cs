@@ -12,5 +12,7 @@ namespace CurrencyRateProvider
 
         Task<Rate> GetRate( string source, string dest, DateTime? refDate= null);
 
+        Task<IEnumerable<string>> GetSupportedCurrencies();
+        
     }
 }

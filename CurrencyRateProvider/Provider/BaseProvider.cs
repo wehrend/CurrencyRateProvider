@@ -26,15 +26,13 @@ namespace CurrencyRateProvider.Provider
 
         public abstract Task<Rate> GetRate(string source, string dest, DateTime? refDate = null);
 
-        public decimal Convert(decimal amount, Rate rate)
-        {
-            return (amount* rate.Value);
-        }
+        public abstract Task<IEnumerable<string>> GetSupportedCurrencies();
 
         public void ThrowApiError(string response)
         {
             throw new Exception($"Api has changed: {response}");
         }
 
+        
     }
 }

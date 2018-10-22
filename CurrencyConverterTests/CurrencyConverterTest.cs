@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 namespace CurrencyConverterTests
 {
     //Todo: Implement api settings, implement fallback / factory
+    //you need to copy the settings file into the debug subfolder
     public class CurrencyConverterTest
     {
         public ITestOutputHelper output { get; set; }
@@ -18,6 +19,21 @@ namespace CurrencyConverterTests
         {
             this.output = outputHelper;
         }
+
+        [Fact]
+        public void GetSupported_Currencies_CurrencyConverterProvider()
+        {
+            //Arrange 
+            IProvider provider = new CurrencyConverterProvider();
+
+            //Act
+            var currrencies = provider.GetSupportedCurrencies();
+
+            //Assert
+            Assert.NotNull(currrencies);
+        }
+
+
 
         [Fact]
         public void Test_Current_Rate_CurrencyConverterProvider()
