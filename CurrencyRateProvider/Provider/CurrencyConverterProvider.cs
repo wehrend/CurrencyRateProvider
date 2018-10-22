@@ -34,57 +34,57 @@ namespace CurrencyRateProvider.Provider
             rate.To = destCur;
 
             //check first if source and target are the same to, save unnecessary queries
-            if (!rate.To.Equals(rate.From))
+            if (rate.To.Equals(rate.From))
             {
                 rate.Value = 1.0m;
                 return rate;
-            }
-                
+            } 
 
-            string queryUrl = "";
 
-            if (date.HasValue)
-            {
-                var dateQuery = string.Format(dateString, date.Value.Year, date.Value.Month, date.Value.Day);
-                queryUrl = string.Format(urlFree, sourceCur, destCur, dateQuery);
-                rate.Date = date.Value;
-            }
-            else {
-                queryUrl = string.Format(urlFree, sourceCur, destCur, "");
-                rate.Date = DateTime.Now;
-            }
+                string queryUrl = "";
 
-            using (var client = new HttpClient())
-            {
-                var response = await client.GetAsync(queryUrl);
-                if (response.IsSuccessStatusCode)
+                if (date.HasValue)
                 {
-                    string jsonResult = await response.Content.ReadAsStringAsync();
-                    if (jsonResult.Contains("error"))
-                        ThrowApiError(jsonResult);
-                    dynamic result = JsonConvert.DeserializeObject(jsonResult);
-
-                    if (date.HasValue)
-                    {
-                        var curkey = sourceCur + "_" + destCur;
-                        var nestedResult = result[curkey];
-                        var datekey = $"{date.Value.Year}-{date.Value.Month}-{date.Value.Day}";
-                        rate.Value = nestedResult[datekey];
-                        return rate;
-                    }
-                    else
-                    {
-                        var key = sourceCur + "_" + destCur;
-                        rate.Value = result[key];
-                        return rate;
-                    }
+                    var dateQuery = string.Format(dateString, date.Value.Year, date.Value.Month, date.Value.Day);
+                    queryUrl = string.Format(urlFree, sourceCur, destCur, dateQuery);
+                    rate.Date = date.Value;
                 }
                 else
                 {
-                    return null;
+                    queryUrl = string.Format(urlFree, sourceCur, destCur, "");
+                    rate.Date = DateTime.Now;
                 }
-            }
 
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync(queryUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResult = await response.Content.ReadAsStringAsync();
+                        if (jsonResult.Contains("error"))
+                            ThrowApiError(jsonResult);
+                        dynamic result = JsonConvert.DeserializeObject(jsonResult);
+
+                        if (date.HasValue)
+                        {
+                            var curkey = sourceCur + "_" + destCur;
+                            var nestedResult = result[curkey];
+                            var datekey = $"{date.Value.Year}-{date.Value.Month}-{date.Value.Day}";
+                            rate.Value = nestedResult[datekey];
+                            return rate;
+                        }
+                        else
+                        {
+                            var key = sourceCur + "_" + destCur;
+                            rate.Value = result[key];
+                            return rate;
+                        }
+                    }
+                    else
+                    {
+                        return null;
+                    }
+            }
 
         }
 

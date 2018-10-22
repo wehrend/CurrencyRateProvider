@@ -32,53 +32,52 @@ namespace CurrencyRateProvider.Provider
             rate.To = destCur;
 
             //check first if source and target are the same to, save unnecessary queries
-            if (!rate.To.Equals(rate.From))
+            if (rate.To.Equals(rate.From))
             {
                 rate.Value = 1.0m;
                 return rate;
-            }
+            } 
+                string queryUrl = "";
 
-            string queryUrl = "";
 
-
-            if (date.HasValue)
-            {
-                var dateQuery = string.Format(dateString, date.Value.Year, date.Value.Month, date.Value.Day);
-                var access = string.Format(accessTemplate, apiKey);
-                var historyUrl = string.Format(baseUrlWithMode, historyMode);
-                var fullUrl = historyUrl+ access +"&source={0}&currencies={1}"+dateQuery; 
-                queryUrl = string.Format(fullUrl, sourceCur, destCur);
-                rate.Date = date.Value;
-            }
-            else
-            {
-                var access = string.Format(accessTemplate, apiKey);
-                var historyUrl = string.Format(baseUrlWithMode, liveMode);
-                var fullUrl = historyUrl + access + "&source={0}&currencies={1}";
-                queryUrl = string.Format(fullUrl, sourceCur, destCur, "");
-                rate.Date = DateTime.Now;
-            }
-
-            using (var client = new HttpClient())
-            {
-                var response = await client.GetAsync(queryUrl);
-                if (response.IsSuccessStatusCode)
+                if (date.HasValue)
                 {
-                    string jsonResult = await response.Content.ReadAsStringAsync();
-                    if (jsonResult.Contains("error"))
-                        ThrowApiError(jsonResult);
-                    dynamic result = JsonConvert.DeserializeObject(jsonResult);
-                    var key = sourceCur + destCur;
-                    var nestedResult =result["quotes"];
-                    rate.Value = nestedResult[key];
-                    return rate;
+                    var dateQuery = string.Format(dateString, date.Value.Year, date.Value.Month, date.Value.Day);
+                    var access = string.Format(accessTemplate, apiKey);
+                    var historyUrl = string.Format(baseUrlWithMode, historyMode);
+                    var fullUrl = historyUrl + access + "&source={0}&currencies={1}" + dateQuery;
+                    queryUrl = string.Format(fullUrl, sourceCur, destCur);
+                    rate.Date = date.Value;
                 }
                 else
                 {
-                    return null;
+                    var access = string.Format(accessTemplate, apiKey);
+                    var historyUrl = string.Format(baseUrlWithMode, liveMode);
+                    var fullUrl = historyUrl + access + "&source={0}&currencies={1}";
+                    queryUrl = string.Format(fullUrl, sourceCur, destCur, "");
+                    rate.Date = DateTime.Now;
                 }
-            }
 
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync(queryUrl);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResult = await response.Content.ReadAsStringAsync();
+                        if (jsonResult.Contains("error"))
+                            ThrowApiError(jsonResult);
+                        dynamic result = JsonConvert.DeserializeObject(jsonResult);
+                        var key = sourceCur + destCur;
+                        var nestedResult = result["quotes"];
+                        rate.Value = nestedResult[key];
+                        return rate;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+          
         }
 
         public override Task<Dictionary<string,string>> GetSupportedCurrencies()

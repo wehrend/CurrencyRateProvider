@@ -52,6 +52,7 @@ namespace CurrencyConverterTests
             var rate = provider.GetRate("EUR", "USD").Result;
 
             //Assert
+            Assert.NotEqual(1.199908m, rate.Value);
             Assert.NotEqual(0m,rate.Value);
         }
 
@@ -118,6 +119,7 @@ namespace CurrencyConverterTests
             var rate = provider.GetRate("EUR", "USD").Result;
 
             //Assert
+            Assert.NotEqual(1.199908m, rate.Value);
             Assert.NotEqual(0m, rate.Value);
         }
 
