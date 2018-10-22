@@ -27,10 +27,10 @@ namespace CurrencyConverterTests
             IProvider provider = new CurrencyConverterProvider();
 
             //Act
-            var currrencies = provider.GetSupportedCurrencies();
+            var currencies = provider.GetSupportedCurrencies().Result;
 
             //Assert
-            Assert.NotNull(currrencies);
+            Assert.NotNull(currencies);
         }
 
 

@@ -81,7 +81,7 @@ namespace CurrencyRateProvider.Provider
 
         }
 
-        public override Task<IEnumerable<string>> GetSupportedCurrencies()
+        public override Task<Dictionary<string,string>> GetSupportedCurrencies()
         {
             throw new NotImplementedException();
         }

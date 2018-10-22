@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>sw/</Authors>
-    <Version>0.1.2</Version>
+    <Version>0.2</Version>
     <Description>Provider for exchange rate via json</Description>
   </PropertyGroup>
 

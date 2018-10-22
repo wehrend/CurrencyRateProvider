@@ -88,7 +88,7 @@ namespace CurrencyRateProvider.Provider
 
         }
 
-        public async override Task<IEnumerable<string>> GetSupportedCurrencies()
+        public async override Task<Dictionary<string,string>> GetSupportedCurrencies()
         {
             var queryUrl = "https://free.currencyconverterapi.com/api/v6/currencies";
 
@@ -100,9 +100,21 @@ namespace CurrencyRateProvider.Provider
                     string jsonResult = await response.Content.ReadAsStringAsync();
                     if (jsonResult.Contains("error"))
                         ThrowApiError(jsonResult);
-                    dynamic result = JsonConvert.DeserializeObject(jsonResult);
+                    JObject job = JObject.Parse(jsonResult) as JObject;
 
-                    return result;
+                    var dict = new Dictionary<string, string>();
+                    foreach (dynamic result in job.GetValue("results"))
+                    {
+                        foreach (dynamic cur in result)
+                        {
+                            dict.Add((string) cur.id, (string) cur.currencySymbol);
+
+                        }
+
+                    }
+                   //var dictWithSymbols = result.Where(c => c.Values<string>.Count > 0).ToDictionary(x => x.Key, x => x.Value);
+
+                    return dict;
                 }
                 else
                 {

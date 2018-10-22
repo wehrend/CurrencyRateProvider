@@ -26,7 +26,7 @@ namespace CurrencyRateProvider.Provider
 
         public abstract Task<Rate> GetRate(string source, string dest, DateTime? refDate = null);
 
-        public abstract Task<IEnumerable<string>> GetSupportedCurrencies();
+        public abstract Task<Dictionary<string,string>> GetSupportedCurrencies();
 
         public void ThrowApiError(string response)
         {
